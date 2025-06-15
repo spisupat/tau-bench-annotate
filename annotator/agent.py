@@ -1,41 +1,31 @@
 from smolagents import CodeAgent
 
-from annotator.logfire_agent.agent import trace_downloader
+from annotator._logfire_mcp import (
+    arbitrary_query,
+    get_logfire_records_schema,
+)
 from annotator.models import _model
-from annotator.tools import load_span, load_trace, summarize_trace
+from annotator.tools import load_span, load_trace, save_trace_data
 
-trace_annotator = CodeAgent(
+agent = CodeAgent(
     model=_model,
     tools=[
         load_trace,
         load_span,
-        summarize_trace,
-        # critique,
+        save_trace_data,
+        arbitrary_query,
+        get_logfire_records_schema,
     ],
-    verbosity_level=1,
     stream_outputs=True,
     additional_authorized_imports=["json"],
-    name="trace_annotator",
-    description="""This agent loads a trace from a JSON file, uses tools to summarize and critique a trace.
-    It does so by first breaking the trace into spans (each with their own conversation history).
-    For each span, get a summary & critique of that span.
-    Then, get a summary of all the summaries & all the critiques.
-    Return this summary and critique of the whole trace.
-    """,
-)
-
-orchestrator = CodeAgent(
-    model=_model,
-    tools=[],
-    managed_agents=[trace_downloader, trace_annotator],
-    stream_outputs=True,
     verbosity_level=1,
-    name="orchestrator",
-    description="This agent analyzes and annotates agent execution traces.",
+    planning_interval=12,
+    name="agent",
+    description="This agent analyzes and annotates agent execution traces."
 )
 
-orchestrator.prompt_templates["system_prompt"] = (
-    orchestrator.prompt_templates["system_prompt"]
+agent.prompt_templates["system_prompt"] = (
+    agent.prompt_templates["system_prompt"]
     + """
     You are an expert in annotating and evaluating agent execution traces.
     The user will provide you with a trace ID or a verbose description of a trace query they want to run.
