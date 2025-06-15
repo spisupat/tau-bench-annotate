@@ -27,6 +27,6 @@ orchestrator = CodeAgent(
     managed_agents=[trace_downloader, trace_annotator],
     stream_outputs=True,
     verbosity_level=1,
-    name="trace_annotator",
+    name="orchestrator",
     description="This agent analyzes and annotates agent execution traces."
 )
