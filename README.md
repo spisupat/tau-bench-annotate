@@ -34,7 +34,7 @@ Alternatively, you may choose a trace ID from this [spreadsheet](https://docs.go
 
 ## Running $\tau$-bench
 
-> Note: You do not need to run this to run the Evaluagent, we have already compiled some examples [spreadsheet](https://docs.google.com/spreadsheets/d/1POO8urTFoK6j9MrtLOAK-nHZBM6MkLLGKD5zgZOpCjs/edit?gid=0#gid=0).
+> Note: You do not need to run the $\tau$-bench agent to run the Evaluagent, we have already compiled some example traces from $\tau$-bench to be annotated in this [spreadsheet](https://docs.google.com/spreadsheets/d/1POO8urTFoK6j9MrtLOAK-nHZBM6MkLLGKD5zgZOpCjs/edit?gid=0#gid=0).
 
 To produce a new trace from $\tau$-bench, run:
 
