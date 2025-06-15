@@ -1,5 +1,6 @@
 # This file is adapated from the Logfire MCP server.
 # We were having trouble running the MCP server so we mock it by directly importing tools.
+# See: https://discuss.huggingface.co/t/gradioui-smolagents-mcp-event-loop-is-closed/155485
 
 import os
 import re
