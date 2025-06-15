@@ -9,10 +9,14 @@ description = "hackathon project"
 # readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "anthropic>=0.54.0",
     "gradio>=5.34.0",
     "ipykernel>=6.29.5",
     "litellm>=1.72.6",
     "logfire>=3.19.0",
+    "opentelemetry-api==1.25.0",
+    "opentelemetry-exporter-otlp==1.25.0",
+    "opentelemetry-sdk==1.25.0",
     "pytest>=8.4.0",
     "ruff>=0.11.13",
     "smolagents>=1.18.0",
@@ -28,7 +32,7 @@ allow-direct-references = true
 required-version = ">=0.7.2"
 
 [tool.ruff]
-exclude = [".venv", "tau_bench"]
+exclude = [".venv"]
 line-length = 90
 indent-width = 4
 

@@ -1,28 +1,30 @@
 # Copyright Sierra
 
-import os
 import json
+import multiprocessing
+import os
 import random
 import traceback
-from math import comb
-import multiprocessing
-from typing import List, Dict, Any
-from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from math import comb
+from typing import Any, Dict, List
 
-from dotenv import load_dotenv
-from tau_bench.envs import get_env
-from tau_bench.agents.base import Agent
-from tau_bench.types import EnvRunResult, RunConfig
-from litellm import provider_list
-from tau_bench.envs.user import UserStrategy
-
+import litellm
 import logfire
+from dotenv import load_dotenv
+from litellm import provider_list
+
+from tau_bench.agents.base import Agent
+from tau_bench.envs import get_env
+from tau_bench.envs.user import UserStrategy
+from tau_bench.types import EnvRunResult, RunConfig
 
 load_dotenv()
 
 logfire.configure(scrubbing=False)
 logfire.instrument_anthropic()
+litellm.callbacks = ["logfire"]
 
 
 def run(config: RunConfig) -> List[EnvRunResult]:
