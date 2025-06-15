@@ -18,6 +18,7 @@ trace_downloader = CodeAgent(
         save_trace_data,
     ],
     stream_outputs=True,
+    additional_authorized_imports=["json"],
     verbosity_level=1,
     name="trace_downloader",
     description="""\
