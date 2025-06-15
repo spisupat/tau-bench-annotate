@@ -1,15 +1,14 @@
 import json
 import os
+from ast import literal_eval
 from typing import Any
 
+import yaml
+from jinja2 import Template
 from smolagents import tool
 
 from annotator.constants import DATA_DIR_PATH
 from annotator.models import call_llm
-import json
-from typing import Any
-from ast import literal_eval
-from jinja2 import Template
 
 
 @tool
