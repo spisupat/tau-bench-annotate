@@ -18,6 +18,7 @@ dependencies = [
     "opentelemetry-api==1.25.0",
     "opentelemetry-exporter-otlp==1.25.0",
     "opentelemetry-sdk==1.25.0",
+    "pre-commit>=4.2.0",
     "pytest>=8.4.0",
     "ruff>=0.11.13",
     "smolagents[mcp]>=1.18.0",
