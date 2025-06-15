@@ -91,8 +91,8 @@ def span_critique(trace: list[dict], span_index: int) -> str:
         raise ValueError(f"Span at index {span_index} is not an assistant response.")
 
     spans = trace[:span_index]
-    formatted_interactions = format_interactions(spans)
     agent_response = format_interaction(spans.pop())
+    formatted_interactions = format_interactions(spans)
 
     prompt = Template(SPAN_CRITIQUE_PROMPT_TEMPLATE).render(formatted_interactions=formatted_interactions, agent_response=agent_response)
     response = call_llm(prompt)
