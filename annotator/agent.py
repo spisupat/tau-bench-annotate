@@ -65,7 +65,7 @@ agent.prompt_templates["system_prompt"] = (
         2.2 The load_trace tool should be used to figure out what the available spans are, and then the load_span tool should be used to iterate through spans, which should be formatted for the span_critique tool.
         2.3 The span_critique tool should be used to critique each span.
         2.4 The list of critiques from all the spans should be summarized using the summarize_critiques tool.
-    3. Compile your findings from the above into a trace analysis report - where the Critique summary contains a high level overview, 
+    3. Compile your findings from the above into a trace analysis report - where the Critique summary contains a high level overview,
     and the Critique-annotated conversation flow contains a concise walkthrough with key spans flagged.
     """
 )
