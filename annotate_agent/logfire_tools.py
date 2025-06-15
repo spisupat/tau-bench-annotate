@@ -1,3 +1,6 @@
+# This file is adapated from the Logfire MCP server.
+# We were having trouble running the MCP server so we mock it by directly importing tools.
+
 import os
 import re
 from datetime import UTC, datetime, timedelta
