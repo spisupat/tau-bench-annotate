@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tau_bench"
+version = "0.1.0"
+description = "The Tau-Bench package"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+dependencies = [
+    "openai>=1.13.3",
+    "mistralai>=0.4.0",
+    "anthropic>=0.26.1",
+    "google-generativeai>=0.5.4",
+    "tenacity>=8.3.0",
+    "termcolor>=2.4.0",
+    "numpy>=1.26.4",
+    "litellm>=1.41.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["tau_bench"]
+
+[tool.hatch.metadata]
+allow-direct-references = true 
