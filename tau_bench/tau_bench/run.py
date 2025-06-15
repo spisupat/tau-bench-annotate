@@ -1,29 +1,45 @@
 # Copyright Sierra
 
-import os
 import json
+import multiprocessing
+import os
 import random
 import traceback
-from math import comb
-import multiprocessing
-from typing import List, Dict, Any
-from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from math import comb
+from typing import Any, Dict, List
 
-from tau_bench.envs import get_env
-from tau_bench.agents.base import Agent
-from tau_bench.types import EnvRunResult, RunConfig
+import litellm
+import logfire
+from dotenv import load_dotenv
 from litellm import provider_list
+
+from tau_bench.agents.base import Agent
+from tau_bench.envs import get_env
 from tau_bench.envs.user import UserStrategy
+from tau_bench.types import EnvRunResult, RunConfig
+
+load_dotenv()
+
+logfire.configure(scrubbing=False)
+logfire.instrument_anthropic()
+litellm.callbacks = ["logfire"]
 
 
 def run(config: RunConfig) -> List[EnvRunResult]:
-    assert config.env in ["retail", "airline"], "Only retail and airline envs are supported"
+    assert config.env in ["retail", "airline"], (
+        "Only retail and airline envs are supported"
+    )
     assert config.model_provider in provider_list, "Invalid model provider"
     assert config.user_model_provider in provider_list, "Invalid user model provider"
-    assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot"], "Invalid agent strategy"
+    assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot"], (
+        "Invalid agent strategy"
+    )
     assert config.task_split in ["train", "test", "dev"], "Invalid task split"
-    assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
+    assert config.user_strategy in [item.value for item in UserStrategy], (
+        "Invalid user strategy"
+    )
 
     random.seed(config.seed)
     time_str = datetime.now().strftime("%m%d%H%M%S")
@@ -45,7 +61,9 @@ def run(config: RunConfig) -> List[EnvRunResult]:
         config=config,
     )
     end_index = (
-        len(env.tasks) if config.end_index == -1 else min(config.end_index, len(env.tasks))
+        len(env.tasks)
+        if config.end_index == -1
+        else min(config.end_index, len(env.tasks))
     )
     results: List[EnvRunResult] = []
     lock = multiprocessing.Lock()
@@ -54,7 +72,7 @@ def run(config: RunConfig) -> List[EnvRunResult]:
     else:
         print(
             f"Running tasks {config.start_index} to {end_index} (checkpoint path: {ckpt_path})"
-    )
+        )
     for i in range(config.num_trials):
         if config.task_ids and len(config.task_ids) > 0:
             idxs = config.task_ids
@@ -74,26 +92,27 @@ def run(config: RunConfig) -> List[EnvRunResult]:
             )
 
             print(f"Running task {idx}")
-            try:
-                res = agent.solve(
-                    env=isolated_env,
-                    task_index=idx,
-                )
-                result = EnvRunResult(
-                    task_id=idx,
-                    reward=res.reward,
-                    info=res.info,
-                    traj=res.messages,
-                    trial=i,
-                )
-            except Exception as e:
-                result = EnvRunResult(
-                    task_id=idx,
-                    reward=0.0,
-                    info={"error": str(e), "traceback": traceback.format_exc()},
-                    traj=[],
-                    trial=i,
-                )
+            with logfire.span(f"run_task_{idx}"):
+                try:
+                    res = agent.solve(
+                        env=isolated_env,
+                        task_index=idx,
+                    )
+                    result = EnvRunResult(
+                        task_id=idx,
+                        reward=res.reward,
+                        info=res.info,
+                        traj=res.messages,
+                        trial=i,
+                    )
+                except Exception as e:
+                    result = EnvRunResult(
+                        task_id=idx,
+                        reward=0.0,
+                        info={"error": str(e), "traceback": traceback.format_exc()},
+                        traj=[],
+                        trial=i,
+                    )
             print(
                 "✅" if result.reward == 1 else "❌",
                 f"task_id={idx}",
@@ -121,9 +140,7 @@ def run(config: RunConfig) -> List[EnvRunResult]:
     return results
 
 
-def agent_factory(
-    tools_info: List[Dict[str, Any]], wiki, config: RunConfig
-) -> Agent:
+def agent_factory(tools_info: List[Dict[str, Any]], wiki, config: RunConfig) -> Agent:
     if config.agent_strategy == "tool-calling":
         # native tool calling
         from tau_bench.agents.tool_calling_agent import ToolCallingAgent
@@ -161,7 +178,10 @@ def agent_factory(
         )
     elif config.agent_strategy == "few-shot":
         from tau_bench.agents.few_shot_agent import FewShotToolCallingAgent
-        assert config.few_shot_displays_path is not None, "Few shot displays path is required for few-shot agent strategy"
+
+        assert config.few_shot_displays_path is not None, (
+            "Few shot displays path is required for few-shot agent strategy"
+        )
         with open(config.few_shot_displays_path, "r") as f:
             few_shot_displays = [json.loads(line)["messages_display"] for line in f]
 
