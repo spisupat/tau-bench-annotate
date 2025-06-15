@@ -86,7 +86,7 @@ def span_critique(trace: list[dict], span_index: int) -> str:
        str: The critique of the span.
     """
     if span_index <= 0 or span_index > len(trace):
-        raise ValueError(f"Span index must be between 0 and {len(trace) - 1}")
+        raise ValueError(f"Span index must be between 1 and {len(trace)}")
     if trace[span_index - 1]["role"] != "assistant":
         raise ValueError(f"Span at index {span_index} is not an assistant response.")
 
@@ -94,7 +94,9 @@ def span_critique(trace: list[dict], span_index: int) -> str:
     agent_response = format_interaction(spans.pop())
     formatted_interactions = format_interactions(spans)
 
-    prompt = Template(SPAN_CRITIQUE_PROMPT_TEMPLATE).render(formatted_interactions=formatted_interactions, agent_response=agent_response)
+    prompt = Template(SPAN_CRITIQUE_PROMPT_TEMPLATE).render(
+        formatted_interactions=formatted_interactions, agent_response=agent_response
+    )
     response = call_llm(prompt)
     return response.content.strip()
 
