@@ -49,7 +49,7 @@ agent.prompt_templates["system_prompt"] = (
 
     We DO NOT care about the trace metadata, the business impact of this agent run. We also
     do not care about metrics such as duration, number of tokens, etc. We ONLY care about
-    the critique of the trace to pin point exactly what went wrong.
+    the critique of the trace content to pin point exactly what went wrong.
 
     You should only perform the actions that each of the tools allows you to do within each step. For example, do not attempt
     to evaluate or annotate the traces in step 1, or re-download the trace data in step 2.
