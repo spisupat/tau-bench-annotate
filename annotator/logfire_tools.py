@@ -10,7 +10,7 @@ from typing import Annotated, Any, Literal, TypedDict, cast
 
 from logfire.experimental.query_client import LogfireQueryClient
 from pydantic import AfterValidator
-from smolagents import Tool
+from smolagents import tool
 
 HOUR = 60  # minutes
 DAY = 24 * HOUR
@@ -33,7 +33,7 @@ def validate_age(age: int) -> int:
 ValidatedAge = Annotated[int, AfterValidator(validate_age)]
 """We don't want to add exclusiveMaximum on the schema because it fails with some models."""
 
-
+@tool
 def arbitrary_query(query: str, age: ValidatedAge) -> list[Any]:
     """Run an arbitrary query on the Logfire database.
 
@@ -47,7 +47,7 @@ def arbitrary_query(query: str, age: ValidatedAge) -> list[Any]:
     result = logfire_client.query_json_rows(query, min_timestamp=min_timestamp)
     return result["rows"]
 
-
+@tool
 def get_logfire_records_schema() -> str:
     """Get the records schema from Logfire.
 
@@ -112,42 +112,4 @@ And for `otel_resource_attributes`:
 {resource_attributes}
 """
     return schema_description
-
-
-class ArbitraryQueryTool(Tool):
-    """A tool to run an arbitrary query on the Logfire database."""
-
-    name = "arbitrary_query"
-    description = arbitrary_query.__doc__ or ""
-    inputs = {
-        "query": {
-            "type": "string",
-            "description": "The query to run, as a SQL string.",
-        },
-        "age": {
-            "type": "integer",
-            "description": "Number of minutes to look back, e.g. 30 for last 30 minutes. Maximum allowed value is 7 days.",
-        },
-    }
-    output_type = "array"
-
-    def forward(self, query: str, age: int) -> list[Any]:
-        return arbitrary_query(query, validate_age(age))
-
-
-class GetLogfireRecordsSchemaTool(Tool):
-    """A tool to get the records schema from Logfire."""
-
-    name = "get_logfire_records_schema"
-    description = get_logfire_records_schema.__doc__ or ""
-    inputs = {}
-    output_type = "string"
-
-    def forward(self) -> str:
-        return get_logfire_records_schema()
-
-
-arbitrary_query_tool = ArbitraryQueryTool()
-get_logfire_records_schema_tool = GetLogfireRecordsSchemaTool()
-
 
