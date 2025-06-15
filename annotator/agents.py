@@ -1,22 +1,7 @@
-from smolagents import CodeAgent, ToolCallingAgent
+from smolagents import CodeAgent
 
-from annotator.logfire_tools import arbitrary_query, get_logfire_records_schema
+from annotator.logfire_agent.agent import trace_downloader
 from annotator.models import _model
-from annotator.tools import span_critique
-
-trace_downloader = CodeAgent(
-    model=_model,
-    tools=[
-        get_logfire_records_schema,
-        arbitrary_query,
-        # save trace
-    ],
-    stream_outputs=True,
-    verbosity_level=1,
-    name="trace_downloader",
-    description="This agent queries logfire for a trace with a given traceID, and saves it to a JSON file.",
-)
-
 
 trace_annotator = CodeAgent(
     model=_model,
@@ -42,7 +27,6 @@ orchestrator = CodeAgent(
     managed_agents=[trace_downloader, trace_annotator],
     stream_outputs=True,
     verbosity_level=1,
-    planning_interval=12,
-    name="trace_orchestrator",
-    description="This agent analyzes and annotates agent execution traces.",
+    name="trace_annotator",
+    description="This agent analyzes and annotates agent execution traces."
 )
