@@ -15,6 +15,7 @@ trace_annotator = CodeAgent(
     ],
     verbosity_level=1,
     stream_outputs=True,
+    additional_authorized_imports=["json"],
     name="trace_annotator",
     description="""This agent loads a trace from a JSON file, uses tools to summarize and critique a trace.
     It does so by first breaking the trace into spans (each with their own conversation history).
