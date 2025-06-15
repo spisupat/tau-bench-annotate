@@ -14,8 +14,7 @@ trace_downloader = CodeAgent(
     stream_outputs=True,
     verbosity_level=1,
     name="trace_downloader",
-    description="This agent queries logfire for a trace with a given traceID, and saves it to a JSON file."
-
+    description="This agent queries logfire for a trace with a given traceID, and saves it to a JSON file.",
 )
 
 
@@ -34,20 +33,16 @@ trace_annotator = CodeAgent(
     For each span, get a summary & critique of that span.
     Then, get a summary of all the summaries & all the critiques.
     Return this summary and critique of the whole trace.
-    """
+    """,
 )
 
 orchestrator = CodeAgent(
     model=_model,
-    managed_agents = [
-        trace_downloader,
-        trace_annotator
-    ],
+    tools=[],
+    managed_agents=[trace_downloader, trace_annotator],
     stream_outputs=True,
     verbosity_level=1,
     planning_interval=12,
-    name="trace_annotator",
-    description="This agent analyzes and annotates agent execution traces."
+    name="trace_orchestrator",
+    description="This agent analyzes and annotates agent execution traces.",
 )
-
-
