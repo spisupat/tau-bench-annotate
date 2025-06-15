@@ -1,4 +1,5 @@
-from smolagents import GradioUI
+from smolagents import GradioUI  # type: ignore [import-untyped]
+
 from annotate_agent.planner import agent
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from smolagents import ToolCallingAgent, CodeAgent, LiteLLMModel
+from smolagents import CodeAgent, LiteLLMModel
 
 agent = CodeAgent(
     model=LiteLLMModel(model_id="anthropic/claude-3-7-sonnet-20250219"),

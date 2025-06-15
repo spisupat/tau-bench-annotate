@@ -2521,6 +2521,7 @@ dependencies = [
     { name = "litellm" },
     { name = "logfire" },
     { name = "pytest" },
+    { name = "ruff" },
     { name = "smolagents" },
 ]
 
@@ -2531,6 +2532,7 @@ requires-dist = [
     { name = "litellm", specifier = ">=1.72.6" },
     { name = "logfire", specifier = ">=3.19.0" },
     { name = "pytest", specifier = ">=8.4.0" },
+    { name = "ruff", specifier = ">=0.11.13" },
     { name = "smolagents", specifier = ">=1.18.0" },
 ]
 
