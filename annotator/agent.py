@@ -22,6 +22,7 @@ agent = CodeAgent(
         load_span,
         save_trace_data,
         summarize_critiques,
+        span_critique,
     ],
     stream_outputs=True,
     additional_authorized_imports=["json"],
