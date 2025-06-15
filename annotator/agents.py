@@ -13,7 +13,6 @@ trace_downloader = CodeAgent(
     ],
     stream_outputs=True,
     verbosity_level=1,
-    planning_interval=1,
     name="trace_downloader",
     description="This agent queries logfire for a trace with a given traceID, and saves it to a JSON file."
 
@@ -28,7 +27,6 @@ trace_annotator = CodeAgent(
         # critique,
     ],
     verbosity_level=1,
-    max_tool_threads=10,
     stream_outputs=True,
     name="trace_annotator",
     description="""This agent loads a trace from a JSON file, uses tools to summarize and critique a trace.
