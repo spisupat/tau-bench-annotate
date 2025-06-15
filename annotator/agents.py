@@ -2,15 +2,14 @@ from smolagents import CodeAgent
 
 from annotator.logfire_agent.agent import trace_downloader
 from annotator.models import _model
-from annotator.tools import load_span, load_trace
+from annotator.tools import load_span, load_trace, summarize_trace
 
 trace_annotator = CodeAgent(
     model=_model,
     tools=[
         load_trace,
         load_span,
-        # load_trace,
-        # summarize,
+        summarize_trace,
         # critique,
     ],
     verbosity_level=1,
@@ -32,7 +31,7 @@ orchestrator = CodeAgent(
     stream_outputs=True,
     verbosity_level=1,
     name="orchestrator",
-    description="This agent analyzes and annotates agent execution traces."
+    description="This agent analyzes and annotates agent execution traces.",
 )
 
 orchestrator.prompt_templates["system_prompt"] = (
