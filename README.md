@@ -1,10 +1,10 @@
-# Evaluagent (a short project from [Atla](https://www.atla-ai.com))
+# Evaluagent
 
 This repo contains a copy of the [`tau-bench`](https://github.com/sierra-research/tau-bench) repository, and extends it with the ability to run an agent to evaluate resulting traces.
 
 ## Context
 
-This was a submission for the [Agents Hack](https://huggingface.co/Agents-Hack). Thanks to the organisers at Unaite, Hugging Face, Anthropic, Accel, and Pareto!
+This was a submission for the [Agents Hack](https://huggingface.co/Agents-Hack) by some of the team at [Atla](https://www.atla-ai.com). Thanks to the organisers at Unaite, Hugging Face, Anthropic, Accel, and Pareto!
 
 ## Development Setup
 
