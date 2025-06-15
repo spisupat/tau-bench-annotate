@@ -63,7 +63,7 @@ def load_span(trace_id: str, span_id: str) -> Any:
 
 
 @tool
-def summarize(trace: Any) -> str:
+def summarize_trace(trace: Any) -> str:
     """
     Summarize a trace.
 

@@ -2,14 +2,14 @@ from smolagents import CodeAgent
 
 from annotator.logfire_agent.agent import trace_downloader
 from annotator.models import _model
-from annotator.tools import load_span, load_trace, summarize
+from annotator.tools import load_span, load_trace, summarize_trace
 
 trace_annotator = CodeAgent(
     model=_model,
     tools=[
         load_trace,
         load_span,
-        summarize,
+        summarize_trace,
         # critique,
     ],
     verbosity_level=1,
