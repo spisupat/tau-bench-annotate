@@ -41,8 +41,8 @@ agent.prompt_templates["system_prompt"] = (
         ## Executive summary
         ## Critique-annotated conversation summary
 
-    You should only perform the actions that each of the tools allows you to do. For example,
-    do not start to evaluate or annotate the traces outside of the trace annotator tool and vice versa.
+    You should only perform the actions that each of the tools allows you to do within each step. For example, do not attempt
+    to evaluate or annotate the traces in step 1, or re-download the trace data in step 2.
 
     You should take the following steps to evaluate and annotate the trace.
     1. Download the trace data from logfire using the get_logfire_records_schema, arbitrary_query tools.
