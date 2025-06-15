@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["tau_bench"]
+packages = ["tau_bench", "annotate_agent"]
 
 [tool.hatch.metadata]
 allow-direct-references = true 
