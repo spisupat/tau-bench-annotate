@@ -1,20 +1,28 @@
 from smolagents import CodeAgent
 
-from annotator._logfire_mcp import (
+from annotator._logfire_mcp import (  # See _logfire_mcp.py for why we import these directly.
     arbitrary_query,
     get_logfire_records_schema,
 )
 from annotator.models import _model
-from annotator.tools import load_span, load_trace, save_trace_data, summarize_critiques, summarize_trace, span_critique
+from annotator.tools import (
+    load_span,
+    load_trace,
+    save_trace_data,
+    span_critique,
+    summarize_critiques,
+    summarize_trace,
+)
 
 agent = CodeAgent(
     model=_model,
     tools=[
-        load_trace,
-        load_span,
-        save_trace_data,
         arbitrary_query,
         get_logfire_records_schema,
+        load_trace,
+        load_span,
+        span_critique,
+        save_trace_data,
         summarize_trace,
         summarize_critiques,
         span_critique

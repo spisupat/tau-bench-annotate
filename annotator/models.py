@@ -15,16 +15,16 @@ def call_llm(prompt: str, **overrides):
     Args:
         prompt: The prompt to send to the model
         **overrides: Optional generation parameter overrides
-        
+
     Returns:
         The model's response as a string
     """
     kwargs = _gen_cfg.copy()
     kwargs.update(overrides)
-    
+
     # Format the prompt as a list of messages for LiteLLM
     messages = [
         {"role": "user", "content": prompt}
     ]
-    
+
     return _model.generate(messages=messages, **kwargs)
