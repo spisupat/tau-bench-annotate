@@ -21,6 +21,7 @@ logfire_client = LogfireQueryClient(
     os.getenv("LOGFIRE_BASE_URL"),
 )
 
+
 def validate_age(age: int) -> int:
     """Validate that the age is within acceptable bounds (positive and <= 7 days)."""
     if age <= 0:
@@ -32,6 +33,7 @@ def validate_age(age: int) -> int:
 
 ValidatedAge = Annotated[int, AfterValidator(validate_age)]
 """We don't want to add exclusiveMaximum on the schema because it fails with some models."""
+
 
 @tool
 def arbitrary_query(query: str, age: ValidatedAge) -> list[Any]:
@@ -46,6 +48,7 @@ def arbitrary_query(query: str, age: ValidatedAge) -> list[Any]:
     min_timestamp = datetime.now(UTC) - timedelta(minutes=age)
     result = logfire_client.query_json_rows(query, min_timestamp=min_timestamp)
     return result["rows"]
+
 
 @tool
 def get_logfire_records_schema() -> str:
@@ -86,7 +89,9 @@ def build_schema_description(rows: list[SchemaRow]) -> str:
             attribute_lines.append(f"attributes->>'{name}' (type: {data_type}{modifier})")
         elif row["column_name"].startswith("_lf_otel_resource_attributes"):
             name = row["column_name"][len("_lf_otel_resource_attributes/") :]
-            resource_attribute_lines.append(f"otel_resource_attributes->>'{name}' (type: {data_type}{modifier})")
+            resource_attribute_lines.append(
+                f"otel_resource_attributes->>'{name}' (type: {data_type}{modifier})"
+            )
         else:
             name = row["column_name"]
             normal_column_lines.append(f"{name} {data_type}{modifier}")
@@ -112,4 +117,3 @@ And for `otel_resource_attributes`:
 {resource_attributes}
 """
     return schema_description
-

@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+        exclude: ^tau_bench/
+      - id: check-merge-conflict
+        exclude: ^tau_bench/
+      - id: check-yaml
+        exclude: ^tau_bench/
+      - id: debug-statements
+        exclude: ^tau_bench/
+      - id: end-of-file-fixer
+        exclude: ^tau_bench/
+      - id: forbid-submodules
+        exclude: ^tau_bench/
+      - id: trailing-whitespace
+        exclude: ^tau_bench/
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.5
+    hooks:
+      - id: ruff
+        args: [--fix, --ignore=E501]
+        exclude: ^tau_bench/
+      - id: ruff-format
+        exclude: ^tau_bench/

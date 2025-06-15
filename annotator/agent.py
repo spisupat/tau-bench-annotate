@@ -41,14 +41,14 @@ agent.prompt_templates["system_prompt"] = (
     You will then use the load_trace tool and load_span tools to iterate through spans fro the trace data.
     You will then use span_critique to critique each span, and then use summarize_critiques to summarize the critiques.
     You will then return a trace analysis report to the user with the given format.
-    
+
     Format:
         # Trace analysis report
         ## Critique summary
         ## Critique-annotated conversation flow (concise)
 
-    We do not care about the trace data, the business impact of this agent run, we also
-    do not care about metrics such as duration, number of tokens, etc. We only care about
+    We DO NOT care about the trace metadata, the business impact of this agent run. We also
+    do not care about metrics such as duration, number of tokens, etc. We ONLY care about
     the critique of the trace to pin point exactly what went wrong.
 
     You should only perform the actions that each of the tools allows you to do within each step. For example, do not attempt
@@ -63,8 +63,9 @@ agent.prompt_templates["system_prompt"] = (
     2. Annotate the trace data using the trace_annotator agent.
         2.1 The JSON data should first be loaded from the file we have just created in step 1 using the load_trace tool.
         2.2 The load_trace tool should be used to figure out what the available spans are, and then the load_span tool should be used to iterate through spans, which should be formatted for the span_critique tool.
-        2.3 The list of critiques from all the spans should be summarized using the summarize_critiques tool.
-    3. Compile your findings from the above into a trace analysis report - where the Critique summary contains a high level overview, 
+        2.3 The span_critique tool should be used to critique each span.
+        2.4 The list of critiques from all the spans should be summarized using the summarize_critiques tool.
+    3. Compile your findings from the above into a trace analysis report - where the Critique summary contains a high level overview,
     and the Critique-annotated conversation flow contains a concise walkthrough with key spans flagged.
     """
 )
