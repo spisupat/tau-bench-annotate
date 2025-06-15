@@ -1,4 +1,6 @@
-from smolagents import ToolCallingAgent, CodeAgent
+from smolagents import CodeAgent, ToolCallingAgent
+
+from annotator.logfire_tools import arbitrary_query, get_logfire_records_schema
 from annotator.models import _model
 from annotator.tools import span_critique
 
@@ -15,7 +17,10 @@ span_critic = ToolCallingAgent(
 
 orchestrator = CodeAgent(
     model=_model,
-    tools = [],
+    tools = [
+        arbitrary_query,
+        get_logfire_records_schema,
+    ],
     managed_agents = [
         span_critic
     ],
