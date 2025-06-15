@@ -14,6 +14,7 @@ dependencies = [
     "litellm>=1.72.6",
     "logfire>=3.19.0",
     "pytest>=8.4.0",
+    "ruff>=0.11.13",
     "smolagents>=1.18.0",
 ]
 
@@ -22,3 +23,32 @@ packages = ["tau_bench"]
 
 [tool.hatch.metadata]
 allow-direct-references = true 
+
+[tool.uv]
+required-version = ">=0.7.2"
+
+[tool.ruff]
+exclude = [".venv", "tau_bench"]
+line-length = 90
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+# See: https://docs.astral.sh/ruff/rules/
+select = [
+    "B",   # Bugbear
+    "E",   # Pycodestyle
+    "F",   # Pyflakes
+    "I",   # Isort
+    "RUF", # Ruff
+    "W",   # Pycodestyle
+]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 18
+
