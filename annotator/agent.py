@@ -25,14 +25,13 @@ agent = CodeAgent(
         save_trace_data,
         summarize_trace,
         summarize_critiques,
-        span_critique
     ],
     stream_outputs=True,
     additional_authorized_imports=["json"],
     verbosity_level=1,
     planning_interval=12,
     name="agent",
-    description="This agent analyzes and annotates agent execution traces."
+    description="This agent analyzes and annotates agent execution traces.",
 )
 
 agent.prompt_templates["system_prompt"] = (
@@ -50,8 +49,15 @@ agent.prompt_templates["system_prompt"] = (
         ## Executive summary
         ## Critique-annotated conversation summary
 
+    We do not care about the trace data, the business impact of this agent run, we also
+    do not care about metrics such as duration, number of tokens, etc. We only care about
+    the critique of the trace to pin point exactly what went wrong.
+
     You should only perform the actions that each of the tools allows you to do within each step. For example, do not attempt
     to evaluate or annotate the traces in step 1, or re-download the trace data in step 2.
+
+    You should NOT truncate any of the trace data at all. You should use the entire trace data
+    to critique the trace.
 
     You should take the following steps to evaluate and annotate the trace.
     1. Download the trace data from logfire using the get_logfire_records_schema, arbitrary_query tools.

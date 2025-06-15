@@ -72,13 +72,22 @@ def load_span(trace_id: str, span_id: str) -> Any:
 
 
 SPAN_CRITIQUE_PROMPT_TEMPLATE = """\
-You are a helpful assistant that critiques the response of an agent. You will receive a list of interactions between the agent, the user, and the tools called by the agent.
+You are a helpful assistant that critiques the response of an agent. You will receive a
+list of interactions between the agent, the user, and the tools called by the agent.
 
 Rules of the critique:
 - English only.
-- Be specific, referring to specific parts of the conversation history and the agent's response.
+- Be specific, referring to specific parts of the conversation history and the agent's
+response.
 - Be as concise as possible.
 - Do not output any other text than the critique.
+- Whether the assistant's response or tool call addresses the user's problem or request.
+- If a tool is called, whether the arguments (including IDs, names, or other parameters)
+are correct and sufficient to solve the user's problem.
+- Whether the assistant misuses a tool, omits necessary tool calls, or provides incorrect
+or incomplete information.
+- Any logical errors, hallucinations, or misunderstandings of the user's intent.
+- The appropriateness and clarity of the assistant's response.
 
 ## Conversation history:
 {{ formatted_interactions }}
@@ -88,34 +97,62 @@ Rules of the critique:
 
 
 @tool
-def span_critique(trace: list[dict], span_index: int) -> str:
+def span_critique(span: dict) -> str:
     """
-    Critique a single span within an agent trace.
+    Critique a single assistant span to detect potential failure modes.
 
-    Args:
-        trace (list[dict]): The list of spans that make up the trace.
-        span_index (int): The index of the span within the lists of spans to critique.
+    This tool is intended to be used by an agent to analyze assistant responses and tool
+    usage for correctness and alignment with the user's intent. The critique should focus
+    on the following aspects:
+      - Whether the assistant's response or tool call addresses the user's problem or request.
+      - If a tool is called, whether the arguments (including IDs, names, or other parameters)
+        are correct and sufficient to solve the user's problem.
+      - Whether the assistant misuses a tool, omits necessary tool calls, or provides incorrect
+        or incomplete information.
+      - Any logical errors, hallucinations, or misunderstandings of the user's intent.
+      - The appropriateness and clarity of the assistant's response.
+
+    The span dict should contain:
+      - "span_data": The assistant span to critique (dict with "role", "content", and possibly "tool_calls")
+      - "context": The conversation history leading up to this span (list of dicts in OpenAI message format)
+
+    If the span data is not in OpenAI message format, you should:
+      - Map the roles to the OpenAI roles: "user", "assistant", "system", "tool".
+      - Ensure each message has a "role" and "content" key.
+      - If there are tool calls, represent them using the "tool_calls" key as in the OpenAI format.
+      - If there is other metadata, include it as appropriate.
 
     Example:
-        Critique the 9th span in the trace.
-        >>> span_critique(trace, 9)
-        "The agent uses the incorrect order ID. It should have used ID #1234567890."
+        Critique an assistant response with its context:
+        >>> span_critique({
+        ...     "span_data": {"role": "assistant", "content": "The order status is 'shipped'."},
+        ...     "context": [
+        ...         {"role": "user", "content": "What's the status of order #12345?"},
+        ...         {"role": "assistant", "tool_calls": [{"function": {"name": "get_order_status", "arguments": '{"order_id": "12345"}'}}]},
+        ...         {"role": "tool", "content": '{"status": "shipped", "tracking_number": "ABC123"}'}
+        ...     ]
+        ... })
+        "The assistant correctly reports the order status using the tool result."
 
-    Raises:
-        ValueError: If the span index is not between 1 and the length of the trace.
-        ValueError: If the span is not an assistant response.
+    Args:
+        span (dict): A dict containing:
+            - "span_data": The assistant span to critique
+            - "context": The conversation history (list of message dicts)
 
     Returns:
-       str: The critique of the span.
+        str: The critique of the assistant span, focusing on tool usage, argument correctness, and alignment with the user's intent.
     """
-    if span_index <= 0 or span_index > len(trace):
-        raise ValueError(f"Span index must be between 1 and {len(trace)}")
-    if trace[span_index - 1]["role"] != "assistant":
-        raise ValueError(f"Span at index {span_index} is not an assistant response.")
+    if "span_data" not in span or "context" not in span:
+        raise ValueError("Span dict must contain 'span_data' and 'context' keys")
 
-    spans = trace[:span_index]
-    agent_response = format_interaction(spans.pop())
-    formatted_interactions = format_interactions(spans)
+    span_data = span["span_data"]
+    context = span["context"]
+
+    if span_data.get("role") != "assistant":
+        raise ValueError("Span data must be an assistant response.")
+
+    agent_response = format_interaction(span_data)
+    formatted_interactions = format_interactions(context)
 
     prompt = Template(SPAN_CRITIQUE_PROMPT_TEMPLATE).render(
         formatted_interactions=formatted_interactions, agent_response=agent_response
@@ -152,9 +189,9 @@ def format_interactions(interactions: list[dict[str, Any]]) -> str:
 
 
 def format_interaction(interaction: dict[str, Any]) -> str:
-    role = interaction['role']
+    role = interaction["role"]
     content = format_content(interaction)
-    name = interaction.get('name', "agent" if role == "assistant" else "")
+    name = interaction.get("name", "agent" if role == "assistant" else "")
     name_str = f": {name}" if name else ""
     if role == "system":
         return content
@@ -176,9 +213,13 @@ def format_content(interaction: dict[str, Any]) -> str:
     function_name = interaction["tool_calls"][0]["function"]["name"]
     function_kwargs = interaction["tool_calls"][0]["function"]["arguments"]
     function_kwargs = json.dumps(literal_eval(function_kwargs), indent=4)
-    function_kwargs = ",\n    ".join([f"{k}={v}" for k, v in literal_eval(function_kwargs).items()])
+    function_kwargs = ",\n    ".join(
+        [f"{k}={v}" for k, v in literal_eval(function_kwargs).items()]
+    )
     function_str = f"{function_name}(\n    {function_kwargs},\n)"
     return f"[Tool call]\n{function_str}"
+
+
 @tool
 def summarize_critiques(critiques: list[str]) -> str:
     """
