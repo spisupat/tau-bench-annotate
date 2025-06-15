@@ -25,7 +25,7 @@ class ToolCallingAgent(Agent):
         self.temperature = temperature
 
     def solve(
-        self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 30
+        self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 50
     ) -> SolveResult:
         total_cost = 0.0
         env_reset_res = env.reset(task_index=task_index)
