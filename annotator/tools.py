@@ -72,8 +72,12 @@ def load_span(trace_id: str, span_id: str) -> Any:
 
 
 SPAN_CRITIQUE_PROMPT_TEMPLATE = """\
-You are a helpful assistant that critiques the response of an agent. You will receive a
-list of interactions between the agent, the user, and the tools called by the agent.
+You are a helpful assistant that critiques the response of an agent. You will receive data
+derived from an OpenTelemetry span which may contain a
+list of interactions between an AI agent and a user, and the tools called by the agent.
+
+Not all spans will have this conversation history. If the conversation history is
+not present, you can return "No conversation history found."
 
 Rules of the critique:
 - English only.
@@ -89,11 +93,8 @@ or incomplete information.
 - Any logical errors, hallucinations, or misunderstandings of the user's intent.
 - The appropriateness and clarity of the assistant's response.
 
-## Conversation history:
-{{ formatted_interactions }}
-
-## Agent response:
-{{ agent_response }}"""
+## Span data:
+{{ span_data }}"""
 
 
 @tool
@@ -112,16 +113,6 @@ def span_critique(span: dict) -> str:
       - Any logical errors, hallucinations, or misunderstandings of the user's intent.
       - The appropriateness and clarity of the assistant's response.
 
-    The span dict should contain:
-      - "span_data": The assistant span to critique (dict with "role", "content", and possibly "tool_calls")
-      - "context": The conversation history leading up to this span (list of dicts in OpenAI message format)
-
-    If the span data is not in OpenAI message format, you should:
-      - Map the roles to the OpenAI roles: "user", "assistant", "system", "tool".
-      - Ensure each message has a "role" and "content" key.
-      - If there are tool calls, represent them using the "tool_calls" key as in the OpenAI format.
-      - If there is other metadata, include it as appropriate.
-
     Example:
         Critique an assistant response with its context:
         >>> span_critique({
@@ -135,28 +126,12 @@ def span_critique(span: dict) -> str:
         "The assistant correctly reports the order status using the tool result."
 
     Args:
-        span (dict): A dict containing:
-            - "span_data": The assistant span to critique
-            - "context": The conversation history (list of message dicts)
+        span (dict): A dict containing span data.
 
     Returns:
         str: The critique of the assistant span, focusing on tool usage, argument correctness, and alignment with the user's intent.
     """
-    if "span_data" not in span or "context" not in span:
-        raise ValueError("Span dict must contain 'span_data' and 'context' keys")
-
-    span_data = span["span_data"]
-    context = span["context"]
-
-    if span_data.get("role") != "assistant":
-        raise ValueError("Span data must be an assistant response.")
-
-    agent_response = format_interaction(span_data)
-    formatted_interactions = format_interactions(context)
-
-    prompt = Template(SPAN_CRITIQUE_PROMPT_TEMPLATE).render(
-        formatted_interactions=formatted_interactions, agent_response=agent_response
-    )
+    prompt = Template(SPAN_CRITIQUE_PROMPT_TEMPLATE).render(span_data=str(span))
     response = call_llm(prompt)
     return response.content.strip()
 
